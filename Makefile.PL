@@ -2,14 +2,12 @@ use inc::Module::Install;
 name 'Proc-Guard';
 all_from 'lib/Proc/Guard.pm';
 
-# requires '';
-
+requires 'Class::Accessor::Lite';
+requires 'Exporter' => 5.63;
 
 readme_markdown_from 'lib/Proc/Guard.pm';
 tests 't/*.t t/*/*.t t/*/*/*.t t/*/*/*/*.t';
 test_requires 'Test::More';
-test_requires 'YAML';
 author_tests('xt');
-# use_test_base;
 auto_include;
 WriteAll;

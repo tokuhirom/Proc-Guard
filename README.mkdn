@@ -1,20 +1,68 @@
 # NAME
 
-Proc::Guard -
+Proc::Guard - process runner with RAII pattern
 
 # SYNOPSIS
 
-  use Proc::Guard;
+    use Test::TCP qw/empty_port wait_port/;
+    use File::Which qw/which/;
+    use Proc::Guard;
+
+    my $port = empty_port();
+    my $proc = proc_guard(which('memcached'), '-p', $port);
+    wait_port($port);
+
+    # your code here
 
 # DESCRIPTION
 
-Proc::Guard is
+Proc::Guard runs process, and destroys it when the perl script exits.
+
+# FUNCTIONS
+
+- proc_guard(@cmdline)
+
+This is shorthand for:
+
+    Proc::Guard->new(
+        command => \@cmdline,
+    );
+
+# METHODS
+
+- my $proc = Proc::Guard->new(%args);
+
+Create and run a process. The process is terminated when the returned object is being DESTROYed.
+
+    - command
+
+        Proc::Guard->new(command => '/path/to/memcached');
+        # or
+        Proc::Guard->new(command => ['/path/to/memcached', '-p', '11211']);
+
+    The command line.
+
+    - auto_start
+
+        Proc::Guard->new(auto_start => 0);
+
+    Start child process automatically or not(default: 1).
+
+- pid
+
+Returns process id (or undef if not running).
+
+- start
+
+Starts process.
+
+- stop
+
+Stops process.
 
 # AUTHOR
 
 Tokuhiro Matsuno <tokuhirom AAJKLFJEF GMAIL COM>
-
-# SEE ALSO
 
 # LICENSE
 
