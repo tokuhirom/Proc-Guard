@@ -84,6 +84,8 @@ Proc::Guard - process runner with RAII pattern
 
 Proc::Guard runs process, and destroys it when the perl script exits.
 
+This is useful for testing code working with server process.
+
 =head1 FUNCTIONS
 
 =over 4
