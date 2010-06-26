@@ -1,4 +1,8 @@
 Revision history for Perl extension Proc::Guard
 
+0.02
+
+        - fixed testing issue
+
 0.01    Wed Jun 16 20:41:08 2010
         - original version
