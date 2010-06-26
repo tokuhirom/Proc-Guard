@@ -4,8 +4,11 @@ use Test::More;
 use Test::Requires qw/File::Which Test::TCP/;
 use Proc::Guard;
 
+my $memcached_bin = File::Which::which('memcached');
+plan skip_all => "This test requires memcached binary" unless $memcached_bin;
+
 my $port = Test::TCP::empty_port();
-my $proc = proc_guard(File::Which::which('memcached'), '-p', $port);
+my $proc = proc_guard($memcached_bin, '-p', $port);
 ok $proc->pid, 'memcached: ' . $proc->pid;
 Test::TCP::wait_port($port);
 
