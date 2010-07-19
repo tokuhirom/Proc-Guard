@@ -1,5 +1,9 @@
 Revision history for Perl extension Proc::Guard
 
+0.03
+
+        - fixed deps
+
 0.02
 
         - fixed testing issue

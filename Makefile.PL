@@ -9,6 +9,6 @@ requires 'Test::More' => 0.94;
 readme_markdown_from 'lib/Proc/Guard.pm';
 tests 't/*.t t/*/*.t t/*/*/*.t t/*/*/*/*.t';
 test_requires 'Test::More';
+test_requires 'Test::Requires';
 author_tests('xt');
-auto_include;
 WriteAll;
