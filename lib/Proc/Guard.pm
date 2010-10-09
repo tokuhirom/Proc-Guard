@@ -75,7 +75,7 @@ Proc::Guard - process runner with RAII pattern
     use Proc::Guard;
 
     my $port = empty_port();
-    my $proc = proc_guard(which('memcached'), '-p', $port);
+    my $proc = proc_guard(scalar(which('memcached')), '-p', $port);
     wait_port($port);
 
     # your code here
