@@ -9,10 +9,17 @@ Proc::Guard - process runner with RAII pattern
     use Proc::Guard;
 
     my $port = empty_port();
-    my $proc = proc_guard(which('memcached'), '-p', $port);
+    my $proc = proc_guard(scalar(which('memcached')), '-p', $port);
     wait_port($port);
 
     # your code here
+
+    # --------------
+    # or, use perl code
+    my $proc = proc_guard(sub {
+        ... # run this code in child process
+    });
+    ...
 
 # DESCRIPTION
 
@@ -22,12 +29,18 @@ This is useful for testing code working with server process.
 
 # FUNCTIONS
 
-- proc_guard(@cmdline)
+- proc_guard(@cmdline|\&code)
 
 This is shorthand for:
 
     Proc::Guard->new(
         command => \@cmdline,
+    );
+
+or
+
+    Proc::Guard->new(
+        code => \&code,
     );
 
 # METHODS
@@ -43,6 +56,12 @@ Create and run a process. The process is terminated when the returned object is 
         Proc::Guard->new(command => ['/path/to/memcached', '-p', '11211']);
 
     The command line.
+
+    - code
+
+        Proc::Guard->new(code => sub { ... });
+
+    'code' or 'command' is required.
 
     - auto_start
 

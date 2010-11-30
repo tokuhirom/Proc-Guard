@@ -3,6 +3,7 @@ use warnings;
 use Test::More;
 use Test::Requires qw/File::Which Test::TCP/;
 use Proc::Guard;
+use IO::Socket::INET;
 
 my $memcached_bin = File::Which::which('memcached');
 plan skip_all => "This test requires memcached binary" unless $memcached_bin;
