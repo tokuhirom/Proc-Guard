@@ -1,5 +1,9 @@
 Revision history for Perl extension Proc::Guard
 
+0.04
+
+    - callback function support
+
 0.03
 
         - fixed deps
