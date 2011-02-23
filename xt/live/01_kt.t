@@ -5,15 +5,19 @@ use Test::Requires qw/File::Which Test::TCP/;
 use Proc::Guard;
 use IO::Socket::INET;
 
-my $memcached_bin = File::Which::which('memcached');
-plan skip_all => "This test requires memcached binary" unless $memcached_bin;
+my $ktserver_bin = File::Which::which('ktserver');
+plan skip_all => "This test requires ktserver binary" unless $ktserver_bin;
 
 my $port = Test::TCP::empty_port();
 my $pid;
 {
-    my $proc = proc_guard($memcached_bin, '-p', $port);
+    my $proc = proc_guard(
+        $ktserver_bin,
+        '-log'  => File::Spec->devnull,
+        '-port' => $port
+    );
     $pid = $proc->pid;
-    ok $proc->pid, 'memcached: ' . $proc->pid;
+    ok $proc->pid, 'ktserver: ' . $proc->pid;
     Test::TCP::wait_port($port);
 
     my $sock = IO::Socket::INET->new(
@@ -21,9 +25,9 @@ my $pid;
                 PeerPort => $port,
                 Proto => 'tcp',
     ) or die $!;
-    print $sock "version\r\n";
+    print $sock "GET / HTTP/1.0\015\012\015\012";
     my $version = <$sock>;
-    like $version, qr/VERSION \d\.\d\.\d/;
+    like $version, qr{^HTTP/1.1 404 Not Found};
     note $version;
 }
 is scalar(kill($pid)), 0, 'already killed';
