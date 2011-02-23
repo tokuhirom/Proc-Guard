@@ -1,5 +1,9 @@
 Revision history for Perl extension Proc::Guard
 
+0.05
+
+     - move live tests to xt/
+
 0.04
 
     - callback function support

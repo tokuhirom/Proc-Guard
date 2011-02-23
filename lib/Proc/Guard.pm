@@ -2,7 +2,7 @@ package Proc::Guard;
 use strict;
 use warnings;
 use 5.00800;
-our $VERSION = '0.04';
+our $VERSION = '0.05';
 use Carp ();
 
 # functional interface

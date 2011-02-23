@@ -17,9 +17,9 @@ MANIFEST			This list of files
 META.yml
 README.mkdn
 t/00_compile.t
-t/01_command.t
 t/02_code.t
 xt/01_podspell.t
 xt/02_perlcritic.t
 xt/03_pod.t
+xt/live/01_kt.t
 xt/perlcriticrc
