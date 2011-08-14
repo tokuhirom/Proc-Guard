@@ -20,8 +20,9 @@ sub proc_guard {
 
 # OOish interface
 use POSIX;
-use Class::Accessor::Lite;
-Class::Accessor::Lite->mk_accessors(qw/pid/);
+use Class::Accessor::Lite 0.05 (
+	rw => ['pid'],
+);
 
 sub new {
     my $class = shift;

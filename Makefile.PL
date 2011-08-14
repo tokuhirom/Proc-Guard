@@ -2,7 +2,7 @@ use inc::Module::Install;
 name 'Proc-Guard';
 all_from 'lib/Proc/Guard.pm';
 
-requires 'Class::Accessor::Lite';
+requires 'Class::Accessor::Lite' => 0.05;
 requires 'Exporter' => 5.63;
 requires 'Test::More' => 0.94;
 
