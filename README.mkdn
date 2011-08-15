@@ -81,6 +81,12 @@ Starts process.
 
 Stops process.
 
+# VARIABLES
+
+- $Proc::Guard::EXIT_STATUS
+
+The last exit status code by `$proc->stop`.
+
 # AUTHOR
 
 Tokuhiro Matsuno <tokuhirom AAJKLFJEF GMAIL COM>

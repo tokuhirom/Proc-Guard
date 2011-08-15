@@ -5,6 +5,8 @@ use 5.00800;
 our $VERSION = '0.05';
 use Carp ();
 
+our $EXIT_STATUS;
+
 # functional interface
 our @EXPORT = qw/proc_guard/;
 use Exporter 'import';
@@ -72,13 +74,17 @@ sub stop {
 
     kill $sig, $self->pid;
     1 while waitpid( $self->pid, 0 ) <= 0;
+    $EXIT_STATUS = $?;
 
     $self->pid(undef);
 }
 
 sub DESTROY {
     my $self = shift;
-    $self->stop() if defined $self->pid && $$ == $self->{_owner_pid};
+    if (defined $self->pid && $$ == $self->{_owner_pid}) {
+        local $?; # "END" function and destructors can change the exit status by modifying $?.(perldoc -f exit)
+        $self->stop()
+    }
 }
 
 1;
@@ -178,6 +184,16 @@ Starts process.
 =item stop
 
 Stops process.
+
+=back
+
+=head1 VARIABLES
+
+=over 4
+
+=item $Proc::Guard::EXIT_STATUS
+
+The last exit status code by C<< $proc->stop >>.
 
 =back
 
