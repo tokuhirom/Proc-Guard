@@ -11,4 +11,5 @@ tests 't/*.t t/*/*.t t/*/*/*.t t/*/*/*/*.t';
 test_requires 'Test::More';
 test_requires 'Test::Requires';
 author_tests('xt');
+repository 'http://github.com/tokuhirom/Proc-Guard';
 WriteAll;
