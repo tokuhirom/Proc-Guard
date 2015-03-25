@@ -22,6 +22,7 @@ sub proc_guard {
 
 # OOish interface
 use POSIX;
+use Errno qw/EINTR ECHILD/;
 use Class::Accessor::Lite 0.05 (
 	rw => ['pid'],
 );
@@ -73,8 +74,22 @@ sub stop {
     $sig ||= SIGTERM;
 
     kill $sig, $self->pid;
-    1 while waitpid( $self->pid, 0 ) <= 0;
-    $EXIT_STATUS = $?;
+    LOOP: {
+        if ( waitpid( $self->pid, 0 ) > 0 ) {
+            $EXIT_STATUS = $?;
+            last LOOP;
+        }
+
+        redo LOOP if $! == EINTR;
+
+        # on any other error, we have no reason to think that
+        # trying again will succeed; on ECHILD, that pid is gone
+        # or not ours, so give up; anything else is strange
+        warn "waitpid() error: $!\n" if $! != ECHILD;
+
+        # waitpid wasn't successful so $? is undefined
+        $EXIT_STATUS = undef;
+    }
 
     $self->pid(undef);
 }
@@ -193,7 +208,8 @@ Stops process.
 
 =item $Proc::Guard::EXIT_STATUS
 
-The last exit status code by C<< $proc->stop >>.
+The last exit status code by C<< $proc->stop >>.  If C<waitpid>
+failed with an error, this will be set to C<undef>.
 
 =back
 
