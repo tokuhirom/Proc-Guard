@@ -1,5 +1,12 @@
 Revision history for Perl module Proc::Guard
 
+{{$NEXT}}
+
+0.07 2015-03-25T22:40:00Z
+
+    - Fixed infinite loop
+      (DAGOLDEN)
+
 0.06 2011-08-14
 
     - localize $? in destructor.

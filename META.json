@@ -52,7 +52,7 @@
             "Class::Accessor::Lite" : "0.05",
             "Exporter" : "5.63",
             "Test::More" : "0.94",
-            "perl" : "5.00800"
+            "perl" : "5.008001"
          }
       }
    },
@@ -68,7 +68,7 @@
          "web" : "https://github.com/tokuhirom/Proc-Guard"
       }
    },
-   "version" : "0.06",
+   "version" : "0.07",
    "x_contributors" : [
       "Neil Bowers <neil@bowers.com>",
       "David Golden <dagolden@cpan.org>",
