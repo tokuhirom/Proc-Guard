@@ -2,6 +2,11 @@ Revision history for Perl module Proc::Guard
 
 {{$NEXT}}
 
+0.07_01 2018-06-29T20:31:04Z
+
+    - Fix hanging on Windows (nponeccop)
+    - Use SIGTERM followed by SIGKILL on Unix
+
 0.07 2015-03-25T22:40:00Z
 
     - Fixed infinite loop
