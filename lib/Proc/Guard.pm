@@ -7,6 +7,128 @@ use Carp ();
 
 our $EXIT_STATUS;
 
+# killer helper borrowed from IPC::Cmd
+# to send both SIGTERM and SIGKILL on Unix
+# and to avoid hanging on Windows
+# where waitpid after killing doesn't work "by design"
+#
+
+my $HAVE_MONOTONIC;
+
+BEGIN {
+    eval {
+        require POSIX; POSIX->import();
+        require Time::HiRes; Time::HiRes->import();
+    };
+
+    eval {
+        my $wait_start_time = Time::HiRes::clock_gettime(&Time::HiRes::CLOCK_MONOTONIC);
+    };
+    if ($@) {
+        $HAVE_MONOTONIC = 0;
+    }
+    else {
+        $HAVE_MONOTONIC = 1;
+    }
+}
+
+sub get_monotonic_time {
+    if ($HAVE_MONOTONIC) {
+        return Time::HiRes::clock_gettime(&Time::HiRes::CLOCK_MONOTONIC);
+    }
+    else {
+        return time();
+    }
+}
+
+sub adjust_monotonic_start_time {
+    my ($ref_vars, $now, $previous) = @_;
+
+    # workaround only for those systems which don't have
+    # Time::HiRes::CLOCK_MONOTONIC (Mac OSX in particular)
+    return if $HAVE_MONOTONIC;
+
+    # don't have previous monotonic value (only happens once
+    # in the beginning of the program execution)
+    return unless $previous;
+
+    my $time_diff = $now - $previous;
+
+    # adjust previously saved time with the skew value which is
+    # either negative when clock moved back or more than 5 seconds --
+    # assuming that event loop does happen more often than once
+    # per five seconds, which might not be always true (!) but
+    # hopefully that's ok, because it's just a workaround
+    if ($time_diff > 5 || $time_diff < 0) {
+        foreach my $ref_var (@{$ref_vars}) {
+            if (defined($$ref_var)) {
+                $$ref_var = $$ref_var + $time_diff;
+            }
+        }
+    }
+}
+
+
+
+
+#
+# give process a chance sending TERM,
+# waiting for a while (2 seconds)
+# and killing it with KILL
+sub kill_gently {
+  my ($pid, $opts) = @_;
+
+  $opts = {} unless $opts;
+  $opts->{'wait_time'} = 2 unless defined($opts->{'wait_time'});
+  $opts->{'first_kill_type'} = 'just_process' unless $opts->{'first_kill_type'};
+  $opts->{'final_kill_type'} = 'just_process' unless $opts->{'final_kill_type'};
+
+  if ($opts->{'first_kill_type'} eq 'just_process') {
+    kill(15, $pid);
+  }
+  elsif ($opts->{'first_kill_type'} eq 'process_group') {
+    kill(-15, $pid);
+  }
+
+  my $do_wait = 1;
+  my $child_finished = 0;
+
+  my $wait_start_time = get_monotonic_time();
+  my $now;
+  my $previous_monotonic_value;
+
+  while ($do_wait) {
+    $previous_monotonic_value = $now;
+    $now = get_monotonic_time();
+
+    adjust_monotonic_start_time([\$wait_start_time], $now, $previous_monotonic_value);
+
+    if ($now > $wait_start_time + $opts->{'wait_time'}) {
+        $do_wait = 0;
+        next;
+    }
+
+    my $waitpid = waitpid($pid, POSIX::WNOHANG);
+
+    if ($waitpid eq -1) {
+        $child_finished = 1;
+        $do_wait = 0;
+        next;
+    }
+
+    Time::HiRes::usleep(250000); # quarter of a second
+  }
+
+  if (!$child_finished) {
+    if ($opts->{'final_kill_type'} eq 'just_process') {
+      kill(9, $pid);
+    }
+    elsif ($opts->{'final_kill_type'} eq 'process_group') {
+      kill(-9, $pid);
+    }
+  }
+}
+
 # functional interface
 our @EXPORT = qw/proc_guard/;
 use Exporter 'import';
@@ -71,26 +193,8 @@ sub stop {
     my ( $self, $sig ) = @_;
     return
         unless defined $self->pid;
-    $sig ||= SIGTERM;
 
-    kill $sig, $self->pid;
-    LOOP: {
-        if ( waitpid( $self->pid, 0 ) > 0 ) {
-            $EXIT_STATUS = $?;
-            last LOOP;
-        }
-
-        redo LOOP if $! == EINTR;
-
-        # on any other error, we have no reason to think that
-        # trying again will succeed; on ECHILD, that pid is gone
-        # or not ours, so give up; anything else is strange
-        warn "waitpid() error: $!\n" if $! != ECHILD;
-
-        # waitpid wasn't successful so $? is undefined
-        $EXIT_STATUS = undef;
-    }
-
+    kill_gently $self->pid;
     $self->pid(undef);
 }
 
