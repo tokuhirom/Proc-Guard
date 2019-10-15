@@ -59,16 +59,16 @@
    "release_status" : "unstable",
    "resources" : {
       "bugtracker" : {
-         "web" : "https://github.com/nponeccop/Proc-Guard/issues"
+         "web" : "https://github.com/tokuhirom/Proc-Guard/issues"
       },
-      "homepage" : "https://github.com/nponeccop/Proc-Guard",
+      "homepage" : "https://github.com/tokuhirom/Proc-Guard",
       "repository" : {
          "type" : "git",
-         "url" : "git://github.com/nponeccop/Proc-Guard.git",
-         "web" : "https://github.com/nponeccop/Proc-Guard"
+         "url" : "git://github.com/tokuhirom/Proc-Guard.git",
+         "web" : "https://github.com/tokuhirom/Proc-Guard"
       }
    },
-   "version" : "0.07_01",
+   "version" : "0.07",
    "x_contributors" : [
       "Andrii Melnykov <andy.melnikov@gmail.com>",
       "David Golden <dagolden@cpan.org>",
