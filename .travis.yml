@@ -1,10 +1,10 @@
 dist: trusty
 language: perl
+before_script:
+  - cpanm --quiet --notest Test::TCP # install optional deps to avoid skipped tests
 perl:
   - "5.14"
-  - "5.16"
   - "5.18"
-  - "5.20"
   - "5.22"
-  - "5.24"
   - "5.26"
+  - "5.30" # quotes are needed so 5.30 isn't interpreted as 5.3
