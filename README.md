@@ -90,7 +90,7 @@ This is useful for testing code working with server process.
 
 # AUTHOR
 
-Tokuhiro Matsuno <tokuhirom AAJKLFJEF GMAIL COM>
+Tokuhiro Matsuno &lt;tokuhirom AAJKLFJEF GMAIL COM>
 
 # LICENSE
 

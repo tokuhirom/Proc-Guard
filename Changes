@@ -2,6 +2,10 @@ Revision history for Perl module Proc::Guard
 
 {{$NEXT}}
 
+    - Fix hanging on Windows (nponeccop)
+    - Use SIGTERM followed by SIGKILL on Unix (nponeccop)
+    - Regenerate the build scripts using Minil 3.7.1
+
 0.07 2015-03-25T22:40:00Z
 
     - Fixed infinite loop
