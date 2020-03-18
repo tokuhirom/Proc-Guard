@@ -21,7 +21,7 @@ sub proc_guard {
 }
 
 # OOish interface
-use POSIX;
+use POSIX qw/:signal_h/;
 use Errno qw/EINTR ECHILD/;
 use Class::Accessor::Lite 0.05 (
 	rw => ['pid'],
